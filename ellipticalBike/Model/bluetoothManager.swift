@@ -8,10 +8,10 @@
 import CoreBluetooth
 
 //Gestion la conexión BLE
-class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     var centralManager: CBCentralManager!
     var connectedPeripheral: CBPeripheral?
-    var dataModel = BikeDataModel()
+    @Published var dataModel = BikeDataModel()
 
     override init() {
         super.init()
@@ -64,5 +64,10 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
             // Procesar el valor recibido y actualizar el modelo de datos
             dataModel.updateData(from: characteristic)
         }
+    }
+    
+    func startScanning() {
+        // Lógica para iniciar la búsqueda de dispositivos
+        centralManager.scanForPeripherals(withServices: nil)
     }
 }
