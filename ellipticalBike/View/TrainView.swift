@@ -20,13 +20,12 @@ struct TrainView: View {
             
             // Data grid
             Grid {
-                GridRow(label: "Speed", value: "\(bikeData.speed ?? 0) km/h").background(Color.red)
-                GridRow(label: "Average Speed", value: "\(bikeData.averageSpeed ?? 0) km/h")
-                GridRow(label: "Cadence", value: "\(bikeData.cadence ?? 0) RPM").background(Color.red)
-                GridRow(label: "Average Cadence", value: "\(bikeData.averageCadence ?? 0) RPM").background(Color.red)
+                GridRow(label: "Speed", value: formatDouble(bikeData.speed ?? 0.0) + " km/h")
+                GridRow(label: "Average Speed", value: formatDouble(bikeData.averageSpeed) + " km/h")
+                GridRow(label: "Cadence", value: "\(bikeData.cadence ?? 0) RPM")
                 GridRow(label: "Distance", value: "\(bikeData.distance ?? 0) m")
                 GridRow(label: "Resistance", value: "\(bikeData.resistance ?? 0)")
-                GridRow(label: "Power", value: "\(bikeData.power ?? 0) W").background(Color.red)
+                GridRow(label: "Power", value: formatDouble(bikeData.power ?? 0.0) + " W")
                 GridRow(label: "Calories", value: "\(bikeData.calories ?? 0) kcal")
                 GridRow(label: "Heart Rate", value: "\(bikeData.heartRate ?? 0) BPM").background(Color.red)
                 GridRow(label: "Time", value: formatTime(seconds: bikeData.time ?? 0))
@@ -42,6 +41,10 @@ struct TrainView: View {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60
         return String(format: "%02d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func formatDouble(_ value: Double) -> String {
+            return String(format: "%.1f", value)
     }
 }
 

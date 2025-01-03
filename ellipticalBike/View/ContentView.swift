@@ -14,7 +14,7 @@ struct ContentView: View {
             TabView(selection: $activeTab) {
                 HomeView()
                     .tag(TabItem.home)
-                TrainView()
+                TrainingView()
                     .tag(TabItem.train)
                 Text("Records")
                     .tag(TabItem.records)

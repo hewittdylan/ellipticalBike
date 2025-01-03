@@ -148,21 +148,25 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
             return
         }
         
-        debugCharacteristicValue(data)
+        //debugCharacteristicValue(data)
         
-        let flags = byteToInt(data, 0, 1)
+        //let flags = byteToInt(data, 0, 1)
+        dataModel.speed = Double(byteToInt(data, 2, 3)) / 100                //OK
+        //let averageSpeed = byteToInt(data, 4, 5) * 0.036
+        dataModel.cadence = byteToInt(data, 6, 7) / 2                        //OK
+        //let averageCadence = byteToInt(data, 8, 9)
+        dataModel.distance = byteToInt(data, 10, 11) / 10 * 10 //Round       //OK
+        //let instantaneousPower = byteToInt(data, 10, 11)
+        //let totalEnergy = byteToInt(data, 12, 13)
+        dataModel.resistance = byteToInt(data, 13, 13)                       //OK
+        dataModel.power = Double(byteToInt(data, 14, 15)) / 360              //OK
+        //let energyPerMinute = byteToInt(data, 16, 17) KJ
+        dataModel.calories = byteToInt(data, 19, 19)                         //OK
+        dataModel.time = byteToInt(data, 26, 27)                             //OK
         
-        print("Flags: \(String(format: "%016b", flags))")
+        //Compruebo si alguno es /= 0
+        checkDataBytes(data)
         
-        dataModel.speed = byteToInt(data, 2, 3)
-        dataModel.cadence = byteToInt(data, 6, 7)
-        dataModel.averageCadence = byteToInt(data, 14, 15)
-        dataModel.distance = byteToInt(data, 10, 11)
-        dataModel.resistance = byteToInt(data, 13, 13)
-        dataModel.calories = byteToInt(data, 19, 19)
-        dataModel.time = byteToInt(data, 26, 27)
-        
-        dataModel.averageSpeed = Int(Double(dataModel.distance ?? 0) / Double(dataModel.time ?? 1) * 3.6)
     }
     
     func byteToInt(_ data: Data, _ i: Int, _ j: Int) -> Int {
@@ -170,5 +174,22 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
             (result << 8) | Int(byte)
         }
     }
-
+    
+    func checkDataBytes(_ data: Data) {
+        // Aseguramos que el tamaño del Data sea exactamente 30 bytes
+        guard data.count == 30 else {
+            print("Error: El Data proporcionado no tiene exactamente 30 bytes.")
+            return
+        }
+        
+        // Lista de índices a verificar
+        let indicesToCheck = [4, 5, 8, 9, 12, 16, 17, 18, 20, 21, 22, 23, 24, 25, 28, 29]
+        
+        for index in indicesToCheck {
+            let byte = data[index] // Accedemos al byte correspondiente
+            if byte != 0 {
+                print("El byte en la posición \(index) es distinto de 0: \(byte)")
+            }
+        }
+    }
 }
