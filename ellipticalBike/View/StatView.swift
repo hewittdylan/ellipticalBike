@@ -26,8 +26,10 @@ struct StatView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(10)
-        .shadow(radius: 5)
     }
+}
+
+#Preview {
+    StatView(label: "Velocidad", value: "0", unit: "km/h")
 }

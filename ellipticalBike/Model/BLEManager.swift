@@ -9,65 +9,166 @@ import CoreBluetooth
 
 //Gestion la conexión BLE
 class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
-    var centralManager: CBCentralManager!
-    var connectedPeripheral: CBPeripheral?
+    static let shared = BLEManager() //Singleton
+    
+    private var centralManager: CBCentralManager!
+    
+    @Published var discoveredDevices: [CBPeripheral] = []
+    @Published var connectedPeripheral: CBPeripheral?
     @Published var dataModel = BikeDataModel()
 
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
+    
+    func startScanning() {
+        discoveredDevices.removeAll()
+        centralManager.scanForPeripherals(withServices: nil)
+    }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            // Inicia el escaneo de dispositivos
-            centralManager.scanForPeripherals(withServices: nil)
+            print("Bluetooth está encendido.")
         } else {
             print("Bluetooth no está disponible.")
         }
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        print("Dispositivo encontrado: \(peripheral.name ?? "Sin nombre")")
-        centralManager.stopScan()
-        connectedPeripheral = peripheral
-        centralManager.connect(peripheral, options: nil)
-    }
+        // Filtrar dispositivos sin nombre
+        guard let name = peripheral.name, !name.isEmpty else {
+            return
+        }
 
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Conectado a: \(peripheral.name ?? "Sin nombre")")
-        connectedPeripheral?.delegate = self
-        connectedPeripheral?.discoverServices(nil)
-    }
-
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        if let services = peripheral.services {
-            for service in services {
-                print("Servicio encontrado: \(service.uuid)")
-                peripheral.discoverCharacteristics(nil, for: service)
-            }
+        // Añadir dispositivos no duplicados
+        if !discoveredDevices.contains(peripheral) {
+            discoveredDevices.append(peripheral)
         }
     }
 
+    func connectToDevice(_ peripheral: CBPeripheral) {
+       centralManager.stopScan()
+       connectedPeripheral = peripheral
+       centralManager.connect(peripheral, options: nil)
+    }
+    
+    func disconnect() {
+        if let peripheral = connectedPeripheral {
+            centralManager.cancelPeripheralConnection(peripheral)
+        }
+    }
+
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+       print("Conectado a: \(peripheral.name ?? "Sin nombre")")
+       peripheral.delegate = self
+       peripheral.discoverServices(nil)
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        if let error = error {
+            print("Error al descubrir servicios: \(error.localizedDescription)")
+            return
+        }
+
+        guard let services = peripheral.services else {
+            print("No se encontraron servicios.")
+            return
+        }
+
+        for service in services {
+            print("Servicio encontrado: \(service.uuid)")
+
+            // Descubrir características dentro del servicio
+            peripheral.delegate = self // Asegúrate de que el delegado está asignado
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+    }
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        if let characteristics = service.characteristics {
-            for characteristic in characteristics {
-                print("Característica encontrada: \(characteristic.uuid)")
-                // Suscribirse a las características según sea necesario
+        if let error = error {
+            print("Error al descubrir características: \(error.localizedDescription)")
+            return
+        }
+
+        guard let characteristics = service.characteristics else {
+            print("No se encontraron características para el servicio \(service.uuid).")
+            return
+        }
+
+        for characteristic in characteristics {
+            print("Característica encontrada: \(characteristic.uuid)")
+
+            // Si es una característica que necesitas, por ejemplo, para leer datos:
+            if characteristic.properties.contains(.read) {
+                peripheral.readValue(for: characteristic)
+            }
+
+            // Si es una característica que soporta notificaciones:
+            if characteristic.properties.contains(.notify) {
                 peripheral.setNotifyValue(true, for: characteristic)
             }
         }
     }
-
+    
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if characteristic.value != nil {
-            // Procesar el valor recibido y actualizar el modelo de datos
-            dataModel.updateData(from: characteristic)
+        if let error = error {
+            print("Error al leer el valor de la característica \(characteristic.uuid): \(error.localizedDescription)")
+            return
+        }
+
+        guard let value = characteristic.value else {
+            print("No se recibió ningún valor para la característica \(characteristic.uuid).")
+            return
+        }
+
+        print("Valor recibido para la característica \(characteristic.uuid): \(value)")
+
+        // Procesar el valor según la característica
+        processCharacteristicValue(characteristic.uuid, value: value)
+    }
+    
+    func processCharacteristicValue(_ uuid: CBUUID, value: Data) {
+        switch uuid {
+        case CBUUID(string: "2AD2"): // Característica que contiene múltiples métricas
+            parseIndoorBikeData(from: value)
+        default:
+            print("Característica no reconocida: \(uuid)")
+            debugCharacteristicValue(value)
         }
     }
     
-    func startScanning() {
-        // Lógica para iniciar la búsqueda de dispositivos
-        centralManager.scanForPeripherals(withServices: nil)
+    func debugCharacteristicValue(_ value: Data) {
+        print("Datos recibidos (hex): \(value.map { String(format: "%02x", $0) }.joined(separator: " "))")
     }
+    
+    func parseIndoorBikeData(from data: Data) {
+        guard data.count >= 4 else {
+            print("Error: Los datos son demasiado cortos para contener los campos requeridos.")
+            return
+        }
+        
+        debugCharacteristicValue(data)
+        
+        let flags = byteToInt(data, 0, 1)
+        
+        print("Flags: \(String(format: "%016b", flags))")
+        
+        dataModel.speed = byteToInt(data, 2, 3)
+        dataModel.cadence = byteToInt(data, 6, 7)
+        dataModel.averageCadence = byteToInt(data, 14, 15)
+        dataModel.distance = byteToInt(data, 10, 11)
+        dataModel.resistance = byteToInt(data, 13, 13)
+        dataModel.calories = byteToInt(data, 19, 19)
+        dataModel.time = byteToInt(data, 26, 27)
+        
+        dataModel.averageSpeed = Int(Double(dataModel.distance ?? 0) / Double(dataModel.time ?? 1) * 3.6)
+    }
+    
+    func byteToInt(_ data: Data, _ i: Int, _ j: Int) -> Int {
+        return data[i...j].reversed().reduce(0) { (result, byte) in
+            (result << 8) | Int(byte)
+        }
+    }
+
 }
