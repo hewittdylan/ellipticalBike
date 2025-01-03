@@ -60,7 +60,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let value = characteristic.value {
+        if characteristic.value != nil {
             // Procesar el valor recibido y actualizar el modelo de datos
             dataModel.updateData(from: characteristic)
         }
