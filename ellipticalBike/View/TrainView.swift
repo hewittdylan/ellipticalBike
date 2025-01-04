@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct TrainView: View {
-    @ObservedObject private var bikeData = BLEManager.shared.dataModel
+    @ObservedObject private var bikeData = BikeDataModel.shared
     let horizontalPadding: CGFloat = 20
     let verticalPadding: CGFloat = 6
     
     var body: some View {
         NavigationStack {
             LazyVStack(spacing: 6) {
+                Text("\(bikeData.heartRate)")
                 HStack {
                     StatView(label: "Speed", value: formatDouble(bikeData.speed ?? 0.0), unit: "km/h")
                     Spacer()
@@ -34,24 +35,36 @@ struct TrainView: View {
                 HStack {
                     StatView(label: "Resistance", value: "\(bikeData.resistance ?? 0)", unit: "")
                     Spacer()
-                    StatView(label: "Power", value:"\(bikeData.power ?? 0)", unit: "W")
+                    StatView(label: "Power", value: formatDouble(bikeData.power ?? 0), unit: "W")
                 }
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)
                 
                 HStack {
-                    StatView(label: "Calories", value: "\(bikeData.calories ?? 0)", unit: "kcal")
+                    StatView(label: "Calories", value: formatDouble(bikeData.calories), unit: "kcal")
                     Spacer()
                     StatView(label: "Time", value: formatTime(seconds: bikeData.time ?? 0), unit: "")
                 }
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)
                 
-                HStack(alignment: .bottom, spacing: 15) {
+                HStack(alignment: .bottom, spacing: 0) {
                     Button(action: {
                         
                     }) {
                         Image(systemName: "play")
+                            .font(.title)
+                            .padding()
+                            .background(Color.black)
+                            .foregroundColor(.white)
+                            .clipShape(Circle())
+                            .scaleEffect(0.8)
+                    }
+                    .padding()
+                    Button(action: {
+                        
+                    }) {
+                        Image(systemName: "stop")
                             .font(.title)
                             .padding()
                             .background(Color.black)

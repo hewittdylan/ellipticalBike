@@ -9,9 +9,23 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var isMenuOpen = false
+    @StateObject private var watchConnector = PhoneSessionManager.shared
+    
     var body: some View {
         VStack {
             HStack {
+                Button(action: {
+                    watchConnector.startSession()
+                }) {
+                    Image(systemName: "applewatch")
+                        .font(.title)
+                        .padding()
+                        .background(Color.black)
+                        .foregroundColor(.white)
+                        .clipShape(Circle())
+                        .scaleEffect(1)
+                }
+                .padding()
                 Spacer()
                 Button(action: {
                     isMenuOpen.toggle()
@@ -29,7 +43,7 @@ struct HomeView: View {
             Spacer()
         }
         .sheet(isPresented: $isMenuOpen) {
-            BluetoothPairingMenu()
+            BluetoothPairingMenuBike()
         }
     }
 }
@@ -38,8 +52,8 @@ struct HomeView: View {
     HomeView()
 }
 
-struct BluetoothPairingMenu: View {
-    @StateObject private var bleManager = BLEManager.shared
+struct BluetoothPairingMenuBike: View {
+    @StateObject private var bleManager = BikeDataModel.shared.bleManager!
     @State private var isScanning = false
     var body: some View {
             VStack {
@@ -51,14 +65,14 @@ struct BluetoothPairingMenu: View {
 
                                 List(bleManager.discoveredDevices, id: \.identifier) { device in
                                     Button(action: {
-                                        bleManager.connectToDevice(device)
+                                        bleManager.connectToBike(device)
                                     }) {
                                         HStack {
                                             Text(device.name ?? "Unknown")
                                             Spacer()
-                                            if bleManager.connectedPeripheral == device {
+                                            if bleManager.connectedBike == device {
                                                 Text("Conectado")
-                                                    .foregroundColor(.green)
+                                                    .foregroundColor(.black)
                                                     .font(.caption)
                                             }
                                         }

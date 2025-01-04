@@ -6,7 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FC4999F72D29866D00C16784 /* ellipticaBikeWatchOS Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FC4999EA2D29866B00C16784 /* ellipticaBikeWatchOS Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FC9806522D29C90400130D41 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC9806512D29C90400130D41 /* WatchConnectivity.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		FC4999F52D29866D00C16784 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FCAA83B32D23647E00739DC2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FC4999E92D29866B00C16784;
+			remoteInfo = "ellipticaBikeWatchOS Watch App";
+		};
 		FCAA83CD2D23648100739DC2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FCAA83B32D23647E00739DC2 /* Project object */;
@@ -23,13 +35,34 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		FC4999FB2D29866D00C16784 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				FC4999F72D29866D00C16784 /* ellipticaBikeWatchOS Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		FC4999EA2D29866B00C16784 /* ellipticaBikeWatchOS Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ellipticaBikeWatchOS Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC9806512D29C90400130D41 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		FCAA83BB2D23647E00739DC2 /* ellipticalBike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ellipticalBike.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCAA83CC2D23648100739DC2 /* ellipticalBikeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ellipticalBikeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCAA83D62D23648100739DC2 /* ellipticalBikeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ellipticalBikeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		FC4999EB2D29866B00C16784 /* ellipticaBikeWatchOS Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "ellipticaBikeWatchOS Watch App";
+			sourceTree = "<group>";
+		};
 		FCAA83BD2D23647E00739DC2 /* ellipticalBike */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ellipticalBike;
@@ -48,10 +81,18 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		FC4999E72D29866B00C16784 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCAA83B82D23647E00739DC2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC9806522D29C90400130D41 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,12 +113,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FC9806502D29C90400130D41 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FC9806512D29C90400130D41 /* WatchConnectivity.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FCAA83B22D23647E00739DC2 = {
 			isa = PBXGroup;
 			children = (
 				FCAA83BD2D23647E00739DC2 /* ellipticalBike */,
 				FCAA83CF2D23648100739DC2 /* ellipticalBikeTests */,
 				FCAA83D92D23648100739DC2 /* ellipticalBikeUITests */,
+				FC4999EB2D29866B00C16784 /* ellipticaBikeWatchOS Watch App */,
+				FC9806502D29C90400130D41 /* Frameworks */,
 				FCAA83BC2D23647E00739DC2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +139,7 @@
 				FCAA83BB2D23647E00739DC2 /* ellipticalBike.app */,
 				FCAA83CC2D23648100739DC2 /* ellipticalBikeTests.xctest */,
 				FCAA83D62D23648100739DC2 /* ellipticalBikeUITests.xctest */,
+				FC4999EA2D29866B00C16784 /* ellipticaBikeWatchOS Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +147,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		FC4999E92D29866B00C16784 /* ellipticaBikeWatchOS Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC4999F82D29866D00C16784 /* Build configuration list for PBXNativeTarget "ellipticaBikeWatchOS Watch App" */;
+			buildPhases = (
+				FC4999E62D29866B00C16784 /* Sources */,
+				FC4999E72D29866B00C16784 /* Frameworks */,
+				FC4999E82D29866B00C16784 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FC4999EB2D29866B00C16784 /* ellipticaBikeWatchOS Watch App */,
+			);
+			name = "ellipticaBikeWatchOS Watch App";
+			packageProductDependencies = (
+			);
+			productName = "ellipticaBikeWatchOS Watch App";
+			productReference = FC4999EA2D29866B00C16784 /* ellipticaBikeWatchOS Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		FCAA83BA2D23647E00739DC2 /* ellipticalBike */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCAA83E02D23648100739DC2 /* Build configuration list for PBXNativeTarget "ellipticalBike" */;
@@ -102,10 +176,12 @@
 				FCAA83B72D23647E00739DC2 /* Sources */,
 				FCAA83B82D23647E00739DC2 /* Frameworks */,
 				FCAA83B92D23647E00739DC2 /* Resources */,
+				FC4999FB2D29866D00C16784 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FC4999F62D29866D00C16784 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FCAA83BD2D23647E00739DC2 /* ellipticalBike */,
@@ -173,6 +249,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					FC4999E92D29866B00C16784 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					FCAA83BA2D23647E00739DC2 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -203,11 +282,19 @@
 				FCAA83BA2D23647E00739DC2 /* ellipticalBike */,
 				FCAA83CB2D23648100739DC2 /* ellipticalBikeTests */,
 				FCAA83D52D23648100739DC2 /* ellipticalBikeUITests */,
+				FC4999E92D29866B00C16784 /* ellipticaBikeWatchOS Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		FC4999E82D29866B00C16784 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCAA83B92D23647E00739DC2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -232,6 +319,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		FC4999E62D29866B00C16784 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCAA83B72D23647E00739DC2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -256,6 +350,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		FC4999F62D29866D00C16784 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FC4999E92D29866B00C16784 /* ellipticaBikeWatchOS Watch App */;
+			targetProxy = FC4999F52D29866D00C16784 /* PBXContainerItemProxy */;
+		};
 		FCAA83CE2D23648100739DC2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FCAA83BA2D23647E00739DC2 /* ellipticalBike */;
@@ -269,6 +368,73 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		FC4999F92D29866D00C16784 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "ellipticaBikeWatchOS Watch App/ellipticaBikeWatchOS Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ellipticaBikeWatchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 7GYCNCZDB3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ellipticaBikeWatchOS;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Access Heart Rate";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Access Heart Rate Updates";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hewittdylan.ellipticalBike;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hewittdylan.ellipticalBike.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Debug;
+		};
+		FC4999FA2D29866D00C16784 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "ellipticaBikeWatchOS Watch App/ellipticaBikeWatchOS Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ellipticaBikeWatchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 7GYCNCZDB3;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ellipticaBikeWatchOS;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Access Heart Rate";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Access Heart Rate Updates";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.hewittdylan.ellipticalBike;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hewittdylan.ellipticalBike.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Release;
+		};
 		FCAA83DE2D23648100739DC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -402,8 +568,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Esta aplicación necesita acceder al Bluetooth para conectar con dispositivos de fitness";
-				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Conectar con tu elíptica y registrar entrenamientos";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connect to your bike";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Connect to your bike";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read Heart Rate from Health App";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Register Heart Rate from Health App";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -439,8 +607,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Esta aplicación necesita acceder al Bluetooth para conectar con dispositivos de fitness";
-				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Conectar con tu elíptica y registrar entrenamientos";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connect to your bike";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Connect to your bike";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read Heart Rate from Health App";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Register Heart Rate from Health App";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -532,6 +702,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		FC4999F82D29866D00C16784 /* Build configuration list for PBXNativeTarget "ellipticaBikeWatchOS Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC4999F92D29866D00C16784 /* Debug */,
+				FC4999FA2D29866D00C16784 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FCAA83B62D23647E00739DC2 /* Build configuration list for PBXProject "ellipticalBike" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -9,15 +9,14 @@ import CoreBluetooth
 
 //Gestion la conexión BLE
 class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
-    static let shared = BLEManager() //Singleton
-    
     private var centralManager: CBCentralManager!
     
     @Published var discoveredDevices: [CBPeripheral] = []
-    @Published var connectedPeripheral: CBPeripheral?
-    @Published var dataModel = BikeDataModel()
+    @Published var connectedBike: CBPeripheral?
+    @Published var dataModel: BikeDataModel
 
-    override init() {
+    init(bikeDataModel: BikeDataModel) {
+        self.dataModel = bikeDataModel
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
@@ -47,14 +46,14 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
     }
 
-    func connectToDevice(_ peripheral: CBPeripheral) {
+    func connectToBike(_ peripheral: CBPeripheral) {
        centralManager.stopScan()
-       connectedPeripheral = peripheral
+       connectedBike = peripheral
        centralManager.connect(peripheral, options: nil)
     }
     
     func disconnect() {
-        if let peripheral = connectedPeripheral {
+        if let peripheral = connectedBike {
             centralManager.cancelPeripheralConnection(peripheral)
         }
     }
@@ -161,7 +160,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         dataModel.resistance = byteToInt(data, 13, 13)                       //OK
         dataModel.power = Double(byteToInt(data, 14, 15)) / 360              //OK
         //let energyPerMinute = byteToInt(data, 16, 17) KJ
-        dataModel.calories = byteToInt(data, 19, 19)                         //OK
+        //dataModel.calories = byteToInt(data, 19, 19)                         //OK
         dataModel.time = byteToInt(data, 26, 27)                             //OK
         
         //Compruebo si alguno es /= 0
