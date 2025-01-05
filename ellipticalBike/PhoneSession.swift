@@ -13,6 +13,7 @@ struct ReceivedData {
 
 class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     static let shared = PhoneSessionManager()
+    private var receivedData: ReceivedData = ReceivedData()
     
     private override init() {}
 
@@ -39,8 +40,8 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let heartRate = message["heartRate"] as? Double {
             print("Heart Rate: \(heartRate) BPM")
-            let data: ReceivedData = .init(heartRate: heartRate)
-            updateBikeDataModel(data)
+            receivedData.heartRate = heartRate
+            updateBikeDataModel(receivedData)
         }
     }
 

@@ -36,7 +36,8 @@ struct ActivityCard: View {
                 Text(activity.amount)
                     .font(.title)
                     .bold()
-                    .padding()
+                    .padding(.vertical)
+                    .scaledToFill()
             }
             .padding()
         }
@@ -44,5 +45,5 @@ struct ActivityCard: View {
 }
 
 #Preview {
-    ActivityCard(activity: Activity(id: 0, title: "Today steps", subtitle: "Goal 10.000", image: "figure.walk", color: .greenSea, amount: "6128"))
+    ActivityCard(activity: Activity(id: 0, title: "Today steps", subtitle: "Goal 10.000", image: "figure.walk", color: .greenSea, amount: "70 minutes"))
 }

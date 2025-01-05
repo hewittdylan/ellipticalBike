@@ -160,7 +160,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         dataModel.resistance = byteToInt(data, 13, 13)                       //OK
         dataModel.power = Double(byteToInt(data, 14, 15)) / 360              //OK
         //let energyPerMinute = byteToInt(data, 16, 17) KJ
-        //dataModel.calories = byteToInt(data, 19, 19)                         //OK
+        dataModel.machineCalories = Double(byteToInt(data, 19, 19))          //OK
         dataModel.time = byteToInt(data, 26, 27)                             //OK
         
         //Compruebo si alguno es /= 0

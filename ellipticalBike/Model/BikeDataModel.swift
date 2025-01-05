@@ -23,7 +23,15 @@ class BikeDataModel: ObservableObject {
     @Published var distance: Int?
     @Published var resistance: Int?
     @Published var power: Double?
-    @Published var calories: Double = 0.0
+    var machineCalories: Double = 0.0
+    var watchCalories: Double = 0.0
+    var calories: Double {  //Prioridad a las calorias con un sensor más preciso
+        if watchCalories > 0 {
+            return watchCalories
+        } else {
+            return machineCalories
+        }
+    }
     @Published var heartRate: Int = 0
     @Published var time: Int?
     
@@ -40,15 +48,13 @@ class BikeDataModel: ObservableObject {
     func updateHeartRate(_ heartRate: Double) {
         //Updated every 3 seconds at most
         self.heartRate = Int(heartRate)
-        calculateCalories(heartRate: heartRate, age: 22, weight: 80, isMale: true)
-        
+        watchCalories += calculateCaloriesPerMinute(heartRate: heartRate, age: 22, weight: 80, isMale: true) / 20
+        //Dividir por 20, pues se actualiza cada 3 segundos
     }
     
-    private func calculateCalories(heartRate: Double, age: Int, weight: Double, isMale: Bool) {
+    private func calculateCaloriesPerMinute(heartRate: Double, age: Int, weight: Double, isMale: Bool) -> Double {
         let sexFactor = isMale ? 1.0 : 0.0
-        let caloriesPerMinute = (heartRate * 0.6309 - Double(age) * 0.2017 + weight * 0.09036 + sexFactor * 1.9 - 55.0969) / 4.184
-        calories += caloriesPerMinute / 20
-        //Dividir por 20, pues se actualiza cada 3 segundos
+        return (heartRate * 0.6309 - Double(age) * 0.2017 + weight * 0.09036 + sexFactor * 1.9 - 55.0969) / 4.184
     }
 }
 
