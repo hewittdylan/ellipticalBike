@@ -10,7 +10,7 @@ import HealthKit
 class HealthManager: ObservableObject {
     let healthStore = HKHealthStore()
     private var timer: Timer?
-    @Published var heartRate: Double = 5.0
+    @Published var heartRate: Double = 137.0
     
     private var iPhoneConnection = WatchSessionManager.shared
 
@@ -56,6 +56,7 @@ class HealthManager: ObservableObject {
                 self?.fetchLatestHeartRate()
                 self?.iPhoneConnection.sendHeartRate(self?.heartRate ?? 0)
                 print("Nueva lectura de corazón \(self?.heartRate ?? 0)")
+                //self?.iPhoneConnection.updateData(data: ["heartRate": self?.heartRate ?? 0])
             }
         }
     }

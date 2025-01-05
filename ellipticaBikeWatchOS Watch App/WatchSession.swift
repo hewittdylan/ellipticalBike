@@ -34,4 +34,12 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
             print("No se ha podido conectar al iPhone")
         }
     }
+    
+    func updateData(data: [String: Any]) {
+        do {
+            try session.updateApplicationContext(data)
+        } catch {
+            print("Error al enviar contexto de la aplicación: \(error)")
+        }
+    }
 }

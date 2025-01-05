@@ -52,5 +52,9 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     private func updateBikeDataModel(_ data: ReceivedData) {
         BikeDataModel.shared.updateHeartRate(data.heartRate)
     }
+    
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        print("Datos recibidos: \(applicationContext)")
+    }
 }
 
