@@ -59,18 +59,18 @@ struct InteractiveTabBar: View {
                 .background {
                     if isActive {
                         Circle()
-                            .fill(.black.gradient)
+                            .fill(.white.gradient)
                             .matchedGeometryEffect(id: "ACTIVETAB", in: animation)
                     }
                 }
                 .frame(width: 25, height: 25, alignment: .bottom)
                 .contentShape(.rect)
                 //.padding(isActive ? 0 : 20)
-                .foregroundStyle(isActive ? .white : .primary)
+                .foregroundStyle(isActive ? .black : .white)
             
             Text(tab.rawValue)
                 .font(.caption2)
-                .foregroundStyle(isActive ? .black : .gray)
+                .foregroundStyle(isActive ? .white : .gray)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .onGeometryChange(for: CGRect.self, of: {

@@ -25,32 +25,36 @@ struct TrainView: View {
                 Button(action: {
                     watchConnector.startSession()
                 }) {
-                    Image(systemName: "applewatch")
-                        .font(.title)
-                        .padding()
-                        .background(Color.black)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
-                        .scaleEffect(1)
+                    ZStack {
+                        Circle()
+                            .foregroundStyle(.gray.opacity(0.25))
+                            .frame(width: 60, height: 60)
+                        Image(systemName: "applewatch")
+                            .font(.title)
+                            .padding()
+                            .foregroundColor(.white)
+                    }
                 }
                 .padding()
                 Spacer()
                 Button(action: {
                     isMenuOpen.toggle()
                 }) {
-                    Image(systemName: "link")
-                        .font(.title)
-                        .padding()
-                        .background(Color.black)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
-                        .scaleEffect(0.8)
+                    ZStack {
+                        Circle()
+                            .foregroundStyle(.gray.opacity(0.25))
+                            .frame(width: 60, height: 60)
+                        Image(systemName: "link")
+                            .font(.title)
+                            .padding()
+                            .foregroundColor(.white)
+                    }
                 }
                 .padding()
             }
             //MARK: Stat Views
             VStack(spacing: 6) {
-                Text("\(bikeData.heartRate)")
+                StatView(label: "Heart Rate", value: "\(bikeData.heartRate)", unit: "bpm")
                 HStack {
                     StatView(label: "Speed", value: formatDouble(bikeData.speed ?? 0.0), unit: "km/h")
                     Spacer()
@@ -86,13 +90,11 @@ struct TrainView: View {
                 HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
                     Button(action: {
-                        withAnimation(nil) {
-                            playButtonIsActive.toggle()
-                        }
+                        playButtonIsActive.toggle()
                     }) {
                         ZStack {
                             Circle()
-                                .fill(.black)
+                                .fill(.gray.opacity(0.25))
                                 .frame(width: 60, height: 60)
                             Image(systemName: playButtonIsActive ? "pause" :"play")
                                 .font(.title)
@@ -109,7 +111,7 @@ struct TrainView: View {
                     }) {
                         ZStack {
                             Circle()
-                                .fill(.black)
+                                .fill(.gray.opacity(0.25))
                                 .frame(width: 60, height: 60)
                             Image(systemName: "stop")
                                 .font(.title)
@@ -161,18 +163,26 @@ struct StatView: View {
     var unit: String
 
     var body: some View {
-        VStack(alignment: .center, spacing: 5) {
-            Text(label)
-                .font(.headline)
-                .foregroundColor(.black)
-            Text(value)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            Text(unit)
-                .font(.subheadline)
-                .foregroundColor(.black.opacity(0.9))
+        ZStack {
+            VStack(alignment: .center, spacing: 5) {
+                Text(label)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                HStack {
+                    Text(value)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Text(unit)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                }
+            }
+            if label == "Heart Rate" && BikeDataModel.shared.watchConnected {
+                Image(systemName: "applewatch.radiowaves.left.and.right")
+                    .frame(width: 138, alignment: .leading)
+            }
         }
-        .frame(width: 140, height: 105)
-        .background(RoundedRectangle(cornerRadius: 30).stroke(.black, lineWidth: 3.5))
+        .frame(width: 150, height: 90)
+        .background(RoundedRectangle(cornerRadius: 20).foregroundStyle(.gray.opacity(0.25)))
     }
 }

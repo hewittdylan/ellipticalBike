@@ -25,29 +25,9 @@ struct HomeView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack {
+                    Spacer()
                     //MARK: Stats
-                    HStack {
-                        Spacer()
-                        VStack(alignment: .leading) {
-                            StatsView(title: "Calories", value: "155 calories", textColor: .alizarin)
-                                .padding(.bottom)
-                            StatsView(title: "Active", value: "47 min", textColor: .nephritis)
-                                .padding(.bottom)
-                            StatsView(title: "Stand", value: "8 hrs", textColor: .belizeHole)
-                        }
-                        Spacer()
-                        ZStack {
-                            ProgressCircleView(color: .alizarin, goal: 500, progress: .constant(155))
-                            ProgressCircleView(color: .nephritis, goal: 60, progress: .constant(47))
-                                .padding(23)
-                            ProgressCircleView(color: .belizeHole, goal: 12, progress: .constant(8))
-                                .padding(46)
-                        }
-                        .padding(.horizontal)
-                        
-                        Spacer()
-                    }
-                    .padding()
+                    CircleStatsView()
                     
                     //MARK: Activities
                     HStack {
@@ -84,27 +64,24 @@ struct HomeView: View {
                     }
                 }
             }
-            .navigationTitle("Summary")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    VStack(alignment: .leading) {
+                        Text("MONDAY, 6 JAN")
+                            .font(.caption)
+                            .bold()
+                            .foregroundStyle(.gray)
+                        Text("Summary")
+                            .font(.title)
+                            .bold()
+                        Spacer()
+                    }
+                }
+            }
         }
     }
 }
 
 #Preview {
     HomeView()
-}
-
-struct StatsView: View {
-    var title: String
-    var value: String
-    var textColor: Color
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.callout)
-                .bold()
-                .foregroundColor(textColor)
-            Text(value)
-                .bold()
-        }
-    }
 }
