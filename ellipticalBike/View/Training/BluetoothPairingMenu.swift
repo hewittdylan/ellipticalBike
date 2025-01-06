@@ -21,6 +21,7 @@ struct BluetoothPairingMenu: View {
                             List(bleManager.discoveredDevices, id: \.identifier) { device in
                                 Button(action: {
                                     bleManager.connectToBike(device)
+                                    bleManager.requestControl()
                                 }) {
                                     HStack {
                                         Text(device.name ?? "Unknown")

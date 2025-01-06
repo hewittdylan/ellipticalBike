@@ -10,6 +10,7 @@ import CoreBluetooth
 //Gestion la conexión BLE
 class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     private var centralManager: CBCentralManager!
+    private var controlPoint: CBCharacteristic?
     
     @Published var discoveredDevices: [CBPeripheral] = []
     @Published var connectedBike: CBPeripheral?
@@ -47,9 +48,13 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     }
 
     func connectToBike(_ peripheral: CBPeripheral) {
-       centralManager.stopScan()
-       connectedBike = peripheral
-       centralManager.connect(peripheral, options: nil)
+        centralManager.stopScan()
+        connectedBike = peripheral
+        centralManager.connect(peripheral, options: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.requestControl()
+            self.requestReset()
+        }
     }
     
     func disconnect() {
@@ -64,6 +69,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
        peripheral.discoverServices(nil)
     }
     
+    //Descubre servicios
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let error = error {
             print("Error al descubrir servicios: \(error.localizedDescription)")
@@ -84,6 +90,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
     }
     
+    //Descubre características
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if let error = error {
             print("Error al descubrir características: \(error.localizedDescription)")
@@ -98,6 +105,10 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         for characteristic in characteristics {
             print("Característica encontrada: \(characteristic.uuid)")
 
+            if characteristic.uuid == CBUUID(string: "2AD9") {
+                controlPoint = characteristic
+            }
+                
             // Si es una característica que necesitas, por ejemplo, para leer datos:
             if characteristic.properties.contains(.read) {
                 peripheral.readValue(for: characteristic)
@@ -110,6 +121,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
     }
     
+    //Recibe actualizaciones de características
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if let error = error {
             print("Error al leer el valor de la característica \(characteristic.uuid): \(error.localizedDescription)")
@@ -127,7 +139,39 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         processCharacteristicValue(characteristic.uuid, value: value)
     }
     
-    func processCharacteristicValue(_ uuid: CBUUID, value: Data) {
+    func requestControl() { // Request Control
+        sendRequest([0x00])
+        print("Control solicitado")
+    }
+    
+    func requestReset() {  // Request Reset
+        sendRequest([0x01])
+        print("Stop reset")
+    }
+    
+    func requestStop() {  // Request Stop
+        sendRequest([0x08, 0x01])
+        print("Stop solicitado")
+    }
+    
+    func requestPause() {  // Request Pause
+        sendRequest([0x08, 0x02])
+        print("Pausar solicitado")
+    }
+    
+    func requestPlay() {  // Request Play/Resume
+        sendRequest([0x07])
+        print("Play solcitado")
+    }
+    
+    private func sendRequest(_ command: [UInt8]) {
+        let data = Data(command)
+        if let characteristic = self.controlPoint {
+            self.connectedBike?.writeValue(data, for: characteristic, type: .withResponse)
+        }
+    }
+    
+    private func processCharacteristicValue(_ uuid: CBUUID, value: Data) {
         switch uuid {
         case CBUUID(string: "2AD2"): // Característica que contiene múltiples métricas
             parseIndoorBikeData(from: value)
@@ -137,58 +181,42 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
     }
     
-    func debugCharacteristicValue(_ value: Data) {
+    private func debugCharacteristicValue(_ value: Data) {
         print("Datos recibidos (hex): \(value.map { String(format: "%02x", $0) }.joined(separator: " "))")
     }
     
-    func parseIndoorBikeData(from data: Data) {
-        guard data.count >= 4 else {
-            print("Error: Los datos son demasiado cortos para contener los campos requeridos.")
-            return
-        }
-        
-        //debugCharacteristicValue(data)
-        
+    private func parseIndoorBikeData(from data: Data) {
         //let flags = byteToInt(data, 0, 1)
-        dataModel.speed = Double(byteToInt(data, 2, 3)) / 100                //OK
-        //let averageSpeed = byteToInt(data, 4, 5) * 0.036
-        dataModel.cadence = byteToInt(data, 6, 7) / 2                        //OK
+        dataModel.speed = Double(byteToInt(data, 2, 3)) / 100
+        //let averageSpeed = Double(byteToInt(data, 4, 5)) / 100
+        dataModel.cadence = byteToInt(data, 6, 7) / 2
         //let averageCadence = byteToInt(data, 8, 9)
-        dataModel.distance = byteToInt(data, 10, 11) / 10 * 10 //Round       //OK
-        //let instantaneousPower = byteToInt(data, 10, 11)
-        //let totalEnergy = byteToInt(data, 12, 13)
-        dataModel.resistance = byteToInt(data, 13, 13)                       //OK
-        dataModel.power = Double(byteToInt(data, 14, 15)) / 360              //OK
-        //let energyPerMinute = byteToInt(data, 16, 17) KJ
-        dataModel.machineCalories = Double(byteToInt(data, 19, 19))          //OK
-        dataModel.time = byteToInt(data, 26, 27)                             //OK
+        dataModel.distance = byteToInt(data, 10, 12)
+        dataModel.resistance = byteToInt(data, 13, 14)
+        dataModel.power = Double(byteToInt(data, 15, 16))
+        //let averagePower = Double(byteToInt(data, 17, 18))
+        dataModel.machineCalories = Double(byteToInt(data, 19, 20))
+        //let energyPerHour = Double(byteToInt(data, 21, 22))
+        //let energyPerMinute = Double(byteToInt(data, 23, 23))
+        dataModel.heartRate = byteToInt(data, 24, 24)
+        //let metabolicEquivalent = byteToInt(data, 25, 25)
+        dataModel.time = byteToInt(data, 26, 27)
+        //let remainingTime = byteToInt(data, 28, 29)
         
-        //Compruebo si alguno es /= 0
-        checkDataBytes(data)
-        
+        /*
+        print("Average Speed: \(averageSpeed)")
+        print("Average Cadence: \(averageCadence)")
+        print("Average Power: \(averagePower)")
+        print("Energy per hour: \(energyPerHour)")
+        print("Energy per minute: \(energyPerMinute)")
+        print("Metabolic equivalent: \(metabolicEquivalent)")
+        print("Remaining time: \(remainingTime)")
+         */
     }
     
-    func byteToInt(_ data: Data, _ i: Int, _ j: Int) -> Int {
+    private func byteToInt(_ data: Data, _ i: Int, _ j: Int) -> Int {
         return data[i...j].reversed().reduce(0) { (result, byte) in
             (result << 8) | Int(byte)
-        }
-    }
-    
-    func checkDataBytes(_ data: Data) {
-        // Aseguramos que el tamaño del Data sea exactamente 30 bytes
-        guard data.count == 30 else {
-            print("Error: El Data proporcionado no tiene exactamente 30 bytes.")
-            return
-        }
-        
-        // Lista de índices a verificar
-        let indicesToCheck = [4, 5, 8, 9, 12, 16, 17, 18, 20, 21, 22, 23, 24, 25, 28, 29]
-        
-        for index in indicesToCheck {
-            let byte = data[index] // Accedemos al byte correspondiente
-            if byte != 0 {
-                print("El byte en la posición \(index) es distinto de 0: \(byte)")
-            }
         }
     }
 }

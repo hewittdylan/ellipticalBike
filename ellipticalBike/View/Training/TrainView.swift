@@ -10,6 +10,7 @@ import SwiftUI
 struct TrainView: View {
     @State private var isMenuOpen = false
     @StateObject private var watchConnector = PhoneSessionManager.shared
+    @StateObject private var bleManager = BikeDataModel.shared.bleManager!
     
     @State private var playButtonIsActive: Bool = false
     @State private var stopButtonIsActive: Bool = false
@@ -90,6 +91,11 @@ struct TrainView: View {
                 HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
                     Button(action: {
+                        if playButtonIsActive {
+                            bleManager.requestPlay()
+                        } else {
+                            bleManager.requestPause()
+                        }
                         playButtonIsActive.toggle()
                     }) {
                         ZStack {
@@ -107,6 +113,9 @@ struct TrainView: View {
                     Spacer(minLength: 125)
                     Button(action: {
                         stopButtonIsActive = true
+                        if playButtonIsActive {
+                            bleManager.requestPause()
+                        }
                         playButtonIsActive = false
                     }) {
                         ZStack {
@@ -128,12 +137,15 @@ struct TrainView: View {
                 Spacer()
             }
             .frame(alignment: .top)
-            .sheet(isPresented: $isMenuOpen) {
+            .sheet(isPresented: $isMenuOpen, onDismiss: {
+                bleManager.requestReset()
+            }) {
                 BluetoothPairingMenu()
             }
             .confirmationDialog("¿Seguro que quieres detener el entrenamiento?", isPresented: $stopButtonIsActive) {
                 Button("Detener") {
                     print("Detener entrenamiento")
+                    bleManager.requestStop()
                 }
                 Button("Cancelar") {
                     
