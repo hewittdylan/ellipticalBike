@@ -30,7 +30,7 @@ struct TrainView: View {
                         Circle()
                             .foregroundStyle(.gray.opacity(0.25))
                             .frame(width: 60, height: 60)
-                        Image(systemName: "applewatch")
+                        Image(systemName: bikeData.watchConnected ? "applewatch.radiowaves.left.and.right" : "applewatch")
                             .font(.title)
                             .padding()
                             .foregroundColor(.white)
@@ -188,10 +188,6 @@ struct StatView: View {
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.9))
                 }
-            }
-            if label == "Heart Rate" && BikeDataModel.shared.watchConnected {
-                Image(systemName: "applewatch.radiowaves.left.and.right")
-                    .frame(width: 138, alignment: .leading)
             }
         }
         .frame(width: 150, height: 90)

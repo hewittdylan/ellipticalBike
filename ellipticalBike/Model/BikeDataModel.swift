@@ -10,7 +10,7 @@ import Foundation
 class BikeDataModel: ObservableObject {
     static let shared = BikeDataModel() //Singleton
     var bleManager: BLEManager?
-    var watchConnected: Bool = false
+    @Published var watchConnected: Bool = false
     
     @Published var speed: Double?
     var averageSpeed: Double {
@@ -47,11 +47,13 @@ class BikeDataModel: ObservableObject {
     }
     
     func updateHeartRate(_ heartRate: Double) {
-        watchConnected = true
-        //Updated every 3 seconds at most
-        self.heartRate = Int(heartRate)
-        watchCalories += calculateCaloriesPerMinute(heartRate: heartRate, age: 22, weight: 80, isMale: true) / 20
-        //Dividir por 20, pues se actualiza cada 3 segundos
+        DispatchQueue.main.async {
+            self.watchConnected = true
+            //Updated every 3 seconds at most
+            self.heartRate = Int(heartRate)
+        }
+        watchCalories += calculateCaloriesPerMinute(heartRate: heartRate, age: 22, weight: 80, isMale: true) / 12
+        //Dividir por 12, pues se actualiza cada 5 segundos
     }
     
     private func calculateCaloriesPerMinute(heartRate: Double, age: Int, weight: Double, isMale: Bool) -> Double {

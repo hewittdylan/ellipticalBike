@@ -52,11 +52,10 @@ class HealthManager: ObservableObject {
     
     func startPeriodicUpdates() {
         if timer == nil {
-            timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+            timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
                 self?.fetchLatestHeartRate()
                 self?.iPhoneConnection.sendHeartRate(self?.heartRate ?? 0)
                 print("Nueva lectura de corazón \(self?.heartRate ?? 0)")
-                //self?.iPhoneConnection.updateData(data: ["heartRate": self?.heartRate ?? 0])
             }
         }
     }
