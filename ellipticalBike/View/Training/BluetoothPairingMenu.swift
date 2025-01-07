@@ -21,7 +21,6 @@ struct BluetoothPairingMenu: View {
                             List(bleManager.discoveredDevices, id: \.identifier) { device in
                                 Button(action: {
                                     bleManager.connectToBike(device)
-                                    bleManager.requestControl()
                                 }) {
                                     HStack {
                                         Text(device.name ?? "Unknown")
@@ -35,23 +34,34 @@ struct BluetoothPairingMenu: View {
                                 }
                             }
                             .listStyle(PlainListStyle())
-
+                            
                             Button(action: {
                                 isScanning = true
                                 bleManager.startScanning()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                     isScanning = false
                                 }
                             }) {
-                                Text(isScanning ? "Scanning" : "Scan")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .frame(width: 150, alignment: .bottom)
-                                    .background(Color.black)
-                                    .cornerRadius(30)
+                                HStack {
+                                    if isScanning {
+                                        Spacer()
+                                    }
+                                    Text("Scan")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .padding()
+                                    
+                                    if isScanning {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle())
+                                            .padding()
+                                    }
+                                }
+                                .frame(width: 150, alignment: .bottom)
+                                .background(Color.black)
+                                .cornerRadius(30)
                             }
+                            .disabled(isScanning)
                             .padding()
                         }
                     }

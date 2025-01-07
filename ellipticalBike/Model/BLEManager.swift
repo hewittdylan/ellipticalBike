@@ -15,6 +15,8 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     @Published var discoveredDevices: [CBPeripheral] = []
     @Published var connectedBike: CBPeripheral?
     @Published var dataModel: BikeDataModel
+    
+    private let fitnessMachineFeatureUUID = CBUUID(string: "1826")
 
     init(bikeDataModel: BikeDataModel) {
         self.dataModel = bikeDataModel
@@ -24,7 +26,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     
     func startScanning() {
         discoveredDevices.removeAll()
-        centralManager.scanForPeripherals(withServices: nil)
+        centralManager.scanForPeripherals(withServices: [fitnessMachineFeatureUUID], options: nil)
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -51,10 +53,6 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         centralManager.stopScan()
         connectedBike = peripheral
         centralManager.connect(peripheral, options: nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.requestControl()
-            self.requestReset()
-        }
     }
     
     func disconnect() {
@@ -106,7 +104,10 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
             print("Característica encontrada: \(characteristic.uuid)")
 
             if characteristic.uuid == CBUUID(string: "2AD9") {
+                print("Fijado el Machine Control Point")
                 controlPoint = characteristic
+                requestControl()
+                requestPause()
             }
                 
             // Si es una característica que necesitas, por ejemplo, para leer datos:
@@ -146,7 +147,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     
     func requestReset() {  // Request Reset
         sendRequest([0x01])
-        print("Stop reset")
+        print("Reset solicitado")
     }
     
     func requestStop() {  // Request Stop

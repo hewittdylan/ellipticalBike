@@ -90,11 +90,11 @@ struct TrainView: View {
                 
                 HStack(alignment: .bottom, spacing: 0) {
                     Spacer()
-                    Button(action: {
+                    Button(action: {  // Play/Pause Button
                         if playButtonIsActive {
-                            bleManager.requestPlay()
-                        } else {
                             bleManager.requestPause()
+                        } else {
+                            bleManager.requestPlay()
                         }
                         playButtonIsActive.toggle()
                     }) {
@@ -111,7 +111,7 @@ struct TrainView: View {
                     }
                     .padding(.horizontal)
                     Spacer(minLength: 125)
-                    Button(action: {
+                    Button(action: {  //Stop Button
                         stopButtonIsActive = true
                         if playButtonIsActive {
                             bleManager.requestPause()
@@ -137,14 +137,11 @@ struct TrainView: View {
                 Spacer()
             }
             .frame(alignment: .top)
-            .sheet(isPresented: $isMenuOpen, onDismiss: {
-                bleManager.requestReset()
-            }) {
+            .sheet(isPresented: $isMenuOpen) {
                 BluetoothPairingMenu()
             }
             .confirmationDialog("¿Seguro que quieres detener el entrenamiento?", isPresented: $stopButtonIsActive) {
                 Button("Detener") {
-                    print("Detener entrenamiento")
                     bleManager.requestStop()
                 }
                 Button("Cancelar") {
