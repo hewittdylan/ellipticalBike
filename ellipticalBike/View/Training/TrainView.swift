@@ -45,7 +45,7 @@ struct TrainView: View {
                         Circle()
                             .foregroundStyle(.gray.opacity(0.25))
                             .frame(width: 60, height: 60)
-                        Image(systemName: "link")
+                        Image(systemName: bleManager.connected ? "bicycle" : "link")
                             .font(.title)
                             .padding()
                             .foregroundColor(.white)
@@ -141,8 +141,8 @@ struct TrainView: View {
                 BluetoothPairingMenu()
             }
             .confirmationDialog("¿Seguro que quieres detener el entrenamiento?", isPresented: $stopButtonIsActive) {
-                Button("Detener") {
-                    bleManager.requestStop()
+                Button("Finalizar Entrenamiento") {
+                    bleManager.disconnect()
                 }
                 Button("Cancelar") {
                     

@@ -15,6 +15,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     @Published var discoveredDevices: [CBPeripheral] = []
     @Published var connectedBike: CBPeripheral?
     @Published var dataModel: BikeDataModel
+    var connected: Bool = false
     
     private let fitnessMachineFeatureUUID = CBUUID(string: "1826")
 
@@ -53,12 +54,19 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         centralManager.stopScan()
         connectedBike = peripheral
         centralManager.connect(peripheral, options: nil)
+        DispatchQueue.main.async {
+            self.connected = true
+        }
     }
     
     func disconnect() {
         if let peripheral = connectedBike {
             centralManager.cancelPeripheralConnection(peripheral)
         }
+        connectedBike = nil
+        controlPoint = nil
+        connected = false
+        print("Desconectado")
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -107,7 +115,8 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
                 print("Fijado el Machine Control Point")
                 controlPoint = characteristic
                 requestControl()
-                requestPause()
+                requestPause()  //Empezar en pausa
+                requestReset()  //Resetear datos
             }
                 
             // Si es una característica que necesitas, por ejemplo, para leer datos:
