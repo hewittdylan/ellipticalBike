@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BluetoothPairingMenu: View {
-    @StateObject private var bleManager = BikeDataModel.shared.bleManager!
+    @StateObject private var bleManager = BLEManager.shared
     @State private var isScanning = false
     var body: some View {
         VStack {
@@ -18,14 +18,14 @@ struct BluetoothPairingMenu: View {
                                 .font(.title3)
                                 .padding()
 
-                            List(bleManager.discoveredDevices, id: \.identifier) { device in
+                            List(bleManager.discoveredFMSs, id: \.identifier) { device in
                                 Button(action: {
                                     bleManager.connectToBike(device)
                                 }) {
                                     HStack {
                                         Text(device.name ?? "Unknown")
                                         Spacer()
-                                        if bleManager.connectedBike == device {
+                                        if bleManager.isConnectedTo(device) {
                                             Text("Conectado")
                                                 .foregroundColor(.black)
                                                 .font(.caption)

@@ -9,24 +9,23 @@ import CoreBluetooth
 
 //Gestion la conexión BLE
 class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
+    static let shared = BLEManager() //Singleton
     private var centralManager: CBCentralManager!
     private var controlPoint: CBCharacteristic?
+    private var connectedBike: CBPeripheral?
     
-    @Published var discoveredDevices: [CBPeripheral] = []
-    @Published var connectedBike: CBPeripheral?
-    @Published var dataModel: BikeDataModel
-    var connected: Bool = false
+    @Published var discoveredFMSs: [CBPeripheral] = []
+    @Published var connected: Bool = false
     
     private let fitnessMachineFeatureUUID = CBUUID(string: "1826")
 
-    init(bikeDataModel: BikeDataModel) {
-        self.dataModel = bikeDataModel
+    override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
     func startScanning() {
-        discoveredDevices.removeAll()
+        discoveredFMSs.removeAll()
         centralManager.scanForPeripherals(withServices: [fitnessMachineFeatureUUID], options: nil)
     }
 
@@ -45,8 +44,8 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
 
         // Añadir dispositivos no duplicados
-        if !discoveredDevices.contains(peripheral) {
-            discoveredDevices.append(peripheral)
+        if !discoveredFMSs.contains(peripheral) {
+            discoveredFMSs.append(peripheral)
         }
     }
 
@@ -57,6 +56,10 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         DispatchQueue.main.async {
             self.connected = true
         }
+    }
+    
+    func isConnectedTo(_ peripheral: CBPeripheral) -> Bool {
+        return connectedBike == peripheral
     }
     
     func disconnect() {
@@ -196,32 +199,24 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
     }
     
     private func parseIndoorBikeData(from data: Data) {
+        var dataModel = ReceivedData()
         //let flags = byteToInt(data, 0, 1)
         dataModel.speed = Double(byteToInt(data, 2, 3)) / 100
-        //let averageSpeed = Double(byteToInt(data, 4, 5)) / 100
+        dataModel.averageSpeed = Double(byteToInt(data, 4, 5)) / 100
         dataModel.cadence = byteToInt(data, 6, 7) / 2
-        //let averageCadence = byteToInt(data, 8, 9)
+        dataModel.averageCadence = byteToInt(data, 8, 9)
         dataModel.distance = byteToInt(data, 10, 12)
         dataModel.resistance = byteToInt(data, 13, 14)
         dataModel.power = Double(byteToInt(data, 15, 16))
-        //let averagePower = Double(byteToInt(data, 17, 18))
-        dataModel.machineCalories = Double(byteToInt(data, 19, 20))
-        //let energyPerHour = Double(byteToInt(data, 21, 22))
-        //let energyPerMinute = Double(byteToInt(data, 23, 23))
+        dataModel.averagePower = Double(byteToInt(data, 17, 18))
+        dataModel.calories = Double(byteToInt(data, 19, 20))
+        dataModel.energyPerHour = Double(byteToInt(data, 21, 22))
+        dataModel.energyPerMinute = Double(byteToInt(data, 23, 23))
         dataModel.heartRate = byteToInt(data, 24, 24)
-        //let metabolicEquivalent = byteToInt(data, 25, 25)
-        dataModel.time = byteToInt(data, 26, 27)
-        //let remainingTime = byteToInt(data, 28, 29)
-        
-        /*
-        print("Average Speed: \(averageSpeed)")
-        print("Average Cadence: \(averageCadence)")
-        print("Average Power: \(averagePower)")
-        print("Energy per hour: \(energyPerHour)")
-        print("Energy per minute: \(energyPerMinute)")
-        print("Metabolic equivalent: \(metabolicEquivalent)")
-        print("Remaining time: \(remainingTime)")
-         */
+        dataModel.metabolicEquivalent = byteToInt(data, 25, 25)
+        dataModel.elapsedTime = byteToInt(data, 26, 27)
+        dataModel.remainingTime = byteToInt(data, 28, 29)
+        BikeDataModel.shared.receiveBikeDataUpdate(dataModel)
     }
     
     private func byteToInt(_ data: Data, _ i: Int, _ j: Int) -> Int {

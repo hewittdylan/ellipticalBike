@@ -10,7 +10,7 @@ import SwiftUI
 struct TrainView: View {
     @State private var isMenuOpen = false
     @StateObject private var watchConnector = PhoneSessionManager.shared
-    @StateObject private var bleManager = BikeDataModel.shared.bleManager!
+    @StateObject private var bleManager = BLEManager.shared
     
     @State private var playButtonIsActive: Bool = false
     @State private var stopButtonIsActive: Bool = false
@@ -30,7 +30,7 @@ struct TrainView: View {
                         Circle()
                             .foregroundStyle(.gray.opacity(0.25))
                             .frame(width: 60, height: 60)
-                        Image(systemName: bikeData.watchConnected ? "applewatch.radiowaves.left.and.right" : "applewatch")
+                        Image(systemName: watchConnector.watchConnected ? "applewatch.radiowaves.left.and.right" : "applewatch")
                             .font(.title)
                             .padding()
                             .foregroundColor(.white)
@@ -57,7 +57,7 @@ struct TrainView: View {
             VStack(spacing: 6) {
                 StatView(label: "Heart Rate", value: "\(bikeData.heartRate)", unit: "bpm")
                 HStack {
-                    StatView(label: "Speed", value: formatDouble(bikeData.speed ?? 0.0), unit: "km/h")
+                    StatView(label: "Speed", value: formatDouble(bikeData.speed), unit: "km/h")
                     Spacer()
                     StatView(label: "Average Speed", value: formatDouble(bikeData.averageSpeed), unit: "km/h")
                 }
@@ -65,17 +65,17 @@ struct TrainView: View {
                 .padding(.vertical, verticalPadding)
                 
                 HStack {
-                    StatView(label: "Cadence", value: "\(bikeData.cadence ?? 0)", unit: "RPM")
+                    StatView(label: "Cadence", value: "\(bikeData.cadence)", unit: "RPM")
                     Spacer()
-                    StatView(label: "Distance", value:"\(bikeData.distance ?? 0)", unit: "m")
+                    StatView(label: "Distance", value:"\(bikeData.distance)", unit: "m")
                 }
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)
                 
                 HStack {
-                    StatView(label: "Resistance", value: "\(bikeData.resistance ?? 0)", unit: "")
+                    StatView(label: "Resistance", value: "\(bikeData.resistance)", unit: "")
                     Spacer()
-                    StatView(label: "Power", value: formatDouble(bikeData.power ?? 0), unit: "W")
+                    StatView(label: "Power", value: formatDouble(bikeData.power), unit: "W")
                 }
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)
@@ -83,7 +83,7 @@ struct TrainView: View {
                 HStack {
                     StatView(label: "Calories", value: formatDouble(bikeData.calories), unit: "kcal")
                     Spacer()
-                    StatView(label: "Time", value: formatTime(seconds: bikeData.time ?? 0), unit: "")
+                    StatView(label: "Time", value: formatTime(seconds: bikeData.elapsedTime), unit: "")
                 }
                 .padding(.horizontal, horizontalPadding)
                 .padding(.vertical, verticalPadding)

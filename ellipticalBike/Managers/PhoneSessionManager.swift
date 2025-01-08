@@ -7,13 +7,12 @@
 
 import WatchConnectivity
 
-struct ReceivedData {
-    var heartRate: Double = 0
-}
-
 class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
-    static let shared = PhoneSessionManager()
+    static let shared = PhoneSessionManager() //Singleton
     private var receivedData: ReceivedData = ReceivedData()
+    
+    @Published var watchConnected: Bool = false
+    private var timer: Timer?
     
     private override init() {}
 
@@ -40,18 +39,29 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         if let heartRate = message["heartRate"] as? Double {
             print("Heart Rate: \(heartRate) BPM")
-            receivedData.heartRate = heartRate
-            updateBikeDataModel(receivedData)
+            receivedData.heartRate = Int(heartRate)
+            BikeDataModel.shared.receiveWatchUpdate(receivedData)
+            setWatchConnected(value: true)
+            timeConnection()
+        }
+    }
+    
+    private func timeConnection() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: (2 * watchRefreshingInterval), repeats: false) { _ in
+            self.setWatchConnected(value: false)
+        }
+    }
+    
+    private func setWatchConnected(value: Bool) {
+        DispatchQueue.main.async {
+            self.watchConnected = value
         }
     }
 
     func sessionDidDeactivate(_ session: WCSession) {
        print("WCSession desactivado.")
        session.activate() // Reactivar si es necesario.
-    }
-    
-    private func updateBikeDataModel(_ data: ReceivedData) {
-        BikeDataModel.shared.updateHeartRate(data.heartRate)
     }
     
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
