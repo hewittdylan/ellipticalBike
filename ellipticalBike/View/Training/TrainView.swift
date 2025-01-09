@@ -29,12 +29,13 @@ struct TrainView: View {
                     ZStack {
                         Circle()
                             .foregroundStyle(.gray.opacity(0.25))
-                            .frame(width: 60, height: 60)
                         Image(systemName: watchConnector.watchConnected ? "applewatch.radiowaves.left.and.right" : "applewatch")
                             .font(.title)
-                            .padding()
+                            .padding(.horizontal)
                             .foregroundColor(.white)
+                            .scaledToFit()
                     }
+                    .frame(width: 60, height: 60)
                 }
                 .padding()
                 Spacer()
@@ -44,12 +45,13 @@ struct TrainView: View {
                     ZStack {
                         Circle()
                             .foregroundStyle(.gray.opacity(0.25))
-                            .frame(width: 60, height: 60)
-                        Image(systemName: bleManager.connected ? "bicycle" : "link")
+                        Image(systemName: bleManager.connected ? "figure.elliptical" : "link")
                             .font(.title)
-                            .padding()
+                            .padding(.horizontal)
                             .foregroundColor(.white)
+                            .scaledToFit()
                     }
+                    .frame(width: 60, height: 60)
                 }
                 .padding()
             }

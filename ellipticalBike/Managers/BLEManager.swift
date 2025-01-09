@@ -68,7 +68,9 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         }
         connectedBike = nil
         controlPoint = nil
-        connected = false
+        DispatchQueue.main.async {
+            self.connected = false
+        }
         print("Desconectado")
     }
 

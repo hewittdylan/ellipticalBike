@@ -48,8 +48,10 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     
     private func timeConnection() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: (2 * watchRefreshingInterval), repeats: false) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 2 * watchRefreshingInterval, repeats: false) { timer in
+            print("Timer fired")
             self.setWatchConnected(value: false)
+            timer.invalidate()
         }
     }
     
