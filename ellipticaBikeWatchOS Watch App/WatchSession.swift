@@ -26,15 +26,24 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
             print("WCSession activado con estado: \(activationState.rawValue)")
         }
     }
-
-    func sendHeartRate(_ heartRate: Double) {
-        if session.isReachable {
-            session.sendMessage(["heartRate": heartRate], replyHandler: nil, errorHandler: nil)
-        } else {
-            print("No se ha podido conectar al iPhone")
+    
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        if let action = applicationContext["action"] as? String, action == "stopWorkout" {
+            DispatchQueue.main.async {
+                HealthManager.shared.stopWorkout()
+            }
         }
     }
-    
+
+
+    func sendHeartRate(_ heartRate: Double) {
+        do {
+            try session.updateApplicationContext(["heartRate": heartRate])
+        } catch {
+            print("Error al actualizar ApplicationContext: \(error.localizedDescription)")
+        }
+    }
+
     func updateData(data: [String: Any]) {
         do {
             try session.updateApplicationContext(data)

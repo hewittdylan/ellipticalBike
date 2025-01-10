@@ -15,6 +15,9 @@ struct TrainView: View {
     @State private var playButtonIsActive: Bool = false
     @State private var stopButtonIsActive: Bool = false
     
+    @State private var watchAnimation: Bool = false
+    @State private var imageID: UUID = UUID()
+    
     @ObservedObject private var bikeData = BikeDataModel.shared
     let horizontalPadding: CGFloat = 20
     let verticalPadding: CGFloat = 6
@@ -26,18 +29,30 @@ struct TrainView: View {
                 Button(action: {
                     watchConnector.startSession()
                 }) {
-                    ZStack {
-                        Circle()
-                            .foregroundStyle(.gray.opacity(0.25))
-                        Image(systemName: watchConnector.watchConnected ? "applewatch.radiowaves.left.and.right" : "applewatch")
-                            .font(.title)
-                            .padding(.horizontal)
-                            .foregroundColor(.white)
-                            .scaledToFit()
+                    HStack {
+                        ZStack {
+                            Circle()
+                                .foregroundStyle(.gray.opacity(0.25))
+                            Image(systemName: watchAnimation ? "applewatch.radiowaves.left.and.right" : "applewatch")
+                                .id(imageID)
+                                .font(.title)
+                                .padding(.horizontal)
+                                .foregroundColor(.white)
+                                .scaledToFit()
+                                .scaleEffect(watchAnimation ? 1.08 : 1.0)
+                                .symbolEffect(.bounce, options: .repeating.speed(0.04), value: watchAnimation)
+                        }
+                        .frame(width: 60, height: 60)
+                        .padding()
+                        .onChange(of: watchConnector.watchConnected) { oldValue, newValue in
+                            watchAnimation = newValue
+                            if oldValue { imageID = UUID() }  //Reset image and animation
+                        }
+                        if watchConnector.sessionStarted && !watchAnimation {
+                            ProgressView()
+                        }
                     }
-                    .frame(width: 60, height: 60)
                 }
-                .padding()
                 Spacer()
                 Button(action: {
                     isMenuOpen.toggle()
@@ -50,10 +65,12 @@ struct TrainView: View {
                             .padding(.horizontal)
                             .foregroundColor(.white)
                             .scaledToFit()
+                            .scaleEffect(bleManager.connected ? 1.1 : 1.0)
+                            .symbolEffect(.bounce, options: .repeating.speed(0.2), value: bleManager.connected)
                     }
                     .frame(width: 60, height: 60)
+                    .padding()
                 }
-                .padding()
             }
             //MARK: Stat Views
             VStack(spacing: 6) {
@@ -145,6 +162,7 @@ struct TrainView: View {
             .confirmationDialog("¿Seguro que quieres detener el entrenamiento?", isPresented: $stopButtonIsActive) {
                 Button("Finalizar Entrenamiento") {
                     bleManager.disconnect()
+                    watchConnector.sendStopWorkoutContext()
                 }
                 Button("Cancelar") {
                     

@@ -7,12 +7,80 @@
 
 import HealthKit
 
-class HealthManager: ObservableObject {
+class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+    static let shared = HealthManager()
+    
     let healthStore = HKHealthStore()
     private var timer: Timer?
     @Published var heartRate: Double = 0.0
     
-    private var iPhoneConnection = WatchSessionManager.shared
+    private var workoutSession: HKWorkoutSession?
+    private var workoutBuilder: HKLiveWorkoutBuilder?
+    
+    // MARK: - HKWorkoutSessionDelegate
+    func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        switch toState {
+        case .running:
+            print("Sesión de entrenamiento iniciada.")
+        case .ended:
+            print("Sesión de entrenamiento terminada.")
+        default:
+            print("Estado de sesión: \(toState.rawValue)")
+        }
+    }
+    
+    func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
+        print("Error en la sesión de entrenamiento: \(error.localizedDescription)")
+    }
+
+    // MARK: - HKLiveWorkoutBuilderDelegate
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
+        print("Se ha recopilado un evento de entrenamiento.")
+    }
+
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf types: Set<HKSampleType>) {
+        // Aquí puedes manejar los datos recopilados en tiempo real
+        print("Datos recopilados: \(types)")
+    }
+    
+    func startWorkout() {
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .elliptical
+        configuration.locationType = .indoor
+        do {
+            workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+            workoutBuilder = workoutSession?.associatedWorkoutBuilder()
+            workoutBuilder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
+
+            workoutSession?.delegate = self
+            workoutBuilder?.delegate = self
+
+            workoutSession?.startActivity(with: Date())
+            workoutBuilder?.beginCollection(withStart: Date()) { success, error in
+                if !success {
+                    print("Error al iniciar el workout: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+        } catch {
+            print("Error al configurar la sesión de ejercicio: \(error.localizedDescription)")
+        }
+    }
+    
+    func stopWorkout() {
+        workoutSession?.end()
+        workoutBuilder?.endCollection(withEnd: Date()) { success, error in
+            if !success {
+                print("Error al finalizar el workout: \(error?.localizedDescription ?? "Unknown error")")
+            }
+            self.workoutBuilder?.finishWorkout { workout, error in
+                if let error = error {
+                    print("Error al finalizar el entrenamiento: \(error.localizedDescription)")
+                } else {
+                    print("Entrenamiento finalizado correctamente.")
+                }
+            }
+        }
+    }
 
     func requestAuthorization() {
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
@@ -54,7 +122,7 @@ class HealthManager: ObservableObject {
         if timer == nil {
             timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
                 self?.fetchLatestHeartRate()
-                self?.iPhoneConnection.sendHeartRate(self?.heartRate ?? 0)
+                WatchSessionManager.shared.sendHeartRate(self?.heartRate ?? 0)
                 print("Nueva lectura de corazón \(self?.heartRate ?? 0)")
             }
         }

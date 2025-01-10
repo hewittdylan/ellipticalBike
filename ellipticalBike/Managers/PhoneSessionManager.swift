@@ -12,6 +12,7 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     private var receivedData: ReceivedData = ReceivedData()
     
     @Published var watchConnected: Bool = false
+    @Published var sessionStarted: Bool = false
     private var timer: Timer?
     
     private override init() {}
@@ -21,6 +22,7 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     func startSession() {
         session.delegate = self
         session.activate()
+        sessionStarted = true
     }
     
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -31,43 +33,44 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
         }
     }
     
+    func sessionDidDeactivate(_ session: WCSession) {
+        print("Session did deactivate")
+    }
+    
     func sessionDidBecomeInactive(_ session: WCSession) {
         print("WCSession se volvió inactivo.")
     }
     
-    //Recibe los datos del Apple Watch
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        if let heartRate = message["heartRate"] as? Double {
+    //Recibe datos del Apple Watch
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        if let heartRate = applicationContext["heartRate"] as? Double {
             print("Heart Rate: \(heartRate) BPM")
             receivedData.heartRate = Int(heartRate)
             BikeDataModel.shared.receiveWatchUpdate(receivedData)
-            setWatchConnected(value: true)
+            DispatchQueue.main.async {
+                self.watchConnected = true
+            }
             timeConnection()
         }
     }
     
     private func timeConnection() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 2 * watchRefreshingInterval, repeats: false) { timer in
-            print("Timer fired")
-            self.setWatchConnected(value: false)
-            timer.invalidate()
-        }
-    }
-    
-    private func setWatchConnected(value: Bool) {
         DispatchQueue.main.async {
-            self.watchConnected = value
+            self.timer?.invalidate()
+            self.timer = Timer.scheduledTimer(withTimeInterval: 2 * watchRefreshingInterval, repeats: false) { [weak self] _ in
+                print("Timer fired")
+                self?.watchConnected = false
+            }
         }
     }
-
-    func sessionDidDeactivate(_ session: WCSession) {
-       print("WCSession desactivado.")
-       session.activate() // Reactivar si es necesario.
-    }
     
-    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
-        print("Datos recibidos: \(applicationContext)")
+    func sendStopWorkoutContext() {
+        do {
+            try session.updateApplicationContext(["action": "stopWorkout"])
+            print("Contexto actualizado para detener el entrenamiento")
+        } catch {
+            print("Error al actualizar ApplicationContext: \(error.localizedDescription)")
+        }
     }
 }
 

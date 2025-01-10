@@ -207,7 +207,7 @@ class BLEManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, Obse
         dataModel.averageSpeed = Double(byteToInt(data, 4, 5)) / 100
         dataModel.cadence = byteToInt(data, 6, 7) / 2
         dataModel.averageCadence = byteToInt(data, 8, 9)
-        dataModel.distance = byteToInt(data, 10, 12)
+        dataModel.distance = byteToInt(data, 10, 12) / 10 * 10
         dataModel.resistance = byteToInt(data, 13, 14)
         dataModel.power = Double(byteToInt(data, 15, 16))
         dataModel.averagePower = Double(byteToInt(data, 17, 18))

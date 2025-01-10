@@ -33,14 +33,19 @@ class BikeDataModel: ObservableObject {
             self.watchCaloriesSum += calculateCaloriesPerMinute(heartRate: hr, age: 22, weight: 80, isMale: true) / (60 / watchRefreshingInterval)
             DispatchQueue.main.async {
                 self.heartRate = data.heartRate!
-                self.calories = self.watchCaloriesSum
+                self.calories = self.watchCaloriesSum.rounded(.down)
             }
         }
     }
     
     private func calculateCaloriesPerMinute(heartRate: Int, age: Int, weight: Double, isMale: Bool) -> Double {
-        let sexFactor = isMale ? 1.0 : 0.0
-        return (Double(heartRate) * 0.6309 - Double(age) * 0.2017 + weight * 0.09036 + sexFactor * 1.9 - 55.0969) / 4.184
+        var calories: Double
+        if isMale {
+            calories = Double(age) * 0.2017 + weight * 0.09036 + Double(heartRate) * 0.6309 - 55.0969
+        } else {
+            calories = Double(age) * 0.074 - weight * 0.05741 + Double(heartRate) * 0.4472 - 20.4022
+        }
+        return max(calories, 0.0)
     }
     
     func receiveBikeDataUpdate(_ data: ReceivedData) {
@@ -89,7 +94,11 @@ class BikeDataModel: ObservableObject {
             if let rt = data.remainingTime {
                 self.remainingTime = rt
             }
-            self.averageSpeed = (Double(self.distance) / Double(self.elapsedTime)) * 3.6
+            if self.elapsedTime == 0 {
+                self.averageSpeed = 0
+            } else {
+                self.averageSpeed = (Double(self.distance) / Double(self.elapsedTime)) * 3.6
+            }
         }
     }
 }
