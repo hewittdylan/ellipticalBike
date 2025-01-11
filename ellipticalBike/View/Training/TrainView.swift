@@ -74,7 +74,8 @@ struct TrainView: View {
             }
             //MARK: Stat Views
             VStack(spacing: 6) {
-                StatView(label: "Heart Rate", value: "\(bikeData.heartRate)", unit: "bpm")
+                HeartRateView()
+                //StatView(label: "Heart Rate", value: "\(bikeData.heartRate)", unit: "bpm")
                 HStack {
                     StatView(label: "Speed", value: formatDouble(bikeData.speed), unit: "km/h")
                     Spacer()
