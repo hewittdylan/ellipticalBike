@@ -51,6 +51,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FC37435D2D5C0FBE00A5BCD8 /* homeView.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeView.PNG; sourceTree = "<group>"; };
+		FC37435E2D5C0FBE00A5BCD8 /* trainView.PNG */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trainView.PNG; sourceTree = "<group>"; };
 		FC3C35B22D2A000700590FD1 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		FC4999EA2D29866B00C16784 /* ellipticaBikeWatchOS Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ellipticaBikeWatchOS Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC9806512D29C90400130D41 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
@@ -116,6 +118,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FC37435F2D5C0FBE00A5BCD8 /* screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				FC37435D2D5C0FBE00A5BCD8 /* homeView.PNG */,
+				FC37435E2D5C0FBE00A5BCD8 /* trainView.PNG */,
+			);
+			path = screenshots;
+			sourceTree = "<group>";
+		};
 		FC9806502D29C90400130D41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -134,6 +145,7 @@
 				FC4999EB2D29866B00C16784 /* ellipticaBikeWatchOS Watch App */,
 				FC9806502D29C90400130D41 /* Frameworks */,
 				FCAA83BC2D23647E00739DC2 /* Products */,
+				FC37435F2D5C0FBE00A5BCD8 /* screenshots */,
 			);
 			sourceTree = "<group>";
 		};
