@@ -11,29 +11,26 @@ struct ContentView: View {
     @StateObject private var healthManager = HealthManager.shared
     private var watchSession = WatchSessionManager.shared
     
-    @State private var activateSession = false
+    @State private var activeSession = false
+    @State private var activeWorkout = false
     
     var body: some View {
         ZStack {
-            ZStack {
-                Image(systemName: "suit.heart.fill")
-                    .font(.system(size: 100))
-                    .foregroundStyle(.heartRed.gradient)
-                    .symbolEffect(.bounce, options: .repeating.speed(1), value: activateSession)
-                    .scaleEffect(1)
-                Text(String(format: "%.0f", healthManager.heartRate))
-                    .font(.largeTitle)
-                    .foregroundStyle(.black.gradient)
-            }
-            if !activateSession {
-                Button(action: {
-                    watchSession.startSession()
-                    healthManager.requestAuthorization()
-                    healthManager.startHeartRateQuery()
-                    healthManager.startPeriodicUpdates()
-                    activateSession = true
+            Button(action: {
+                if activeWorkout {
+                    healthManager.stopWorkout()
+                } else {
+                    if !activeSession {
+                        activeSession = true
+                        watchSession.startSession()  //Se activa una única vez, no se desactiva
+                        healthManager.requestAuthorization()
+                        healthManager.startHeartRateQuery()
+                    }
                     healthManager.startWorkout()
-                }) {
+                }
+                activeWorkout.toggle()
+            }) {
+                if !activeWorkout {
                     VStack {
                         Text("Start")
                             .font(.title)
@@ -44,18 +41,32 @@ struct ContentView: View {
                         Text("Monitor")
                             .font(.caption)
                             .foregroundStyle(.heartRed)
-                            
+                        
                     }
+                    .scaleEffect(1.5)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .cornerRadius(0)
+                    .frame(width: 250, height: 250, alignment: .center)
+                    .padding()
                     .background(.black)
-                    .ignoresSafeArea(.all)
+                } else {
+                    ZStack {
+                        Image(systemName: "suit.heart.fill")
+                            .font(.system(size: 100))
+                            .foregroundStyle(.heartRed.gradient)
+                            .symbolEffect(.bounce, options: .repeating.speed(1), value: activeWorkout)
+                            .scaleEffect(1)
+                        Text(String(format: "%.0f", healthManager.heartRate))
+                            .font(.largeTitle)
+                            .foregroundStyle(.black.gradient)
+                    }
+                    .scaleEffect(1.5)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(width: 250, height: 250, alignment: .center)
+                    .padding()
+                    .background(.black)
                 }
             }
         }
-        .scaleEffect(1.5)
-        .ignoresSafeArea()
-        .padding()
         .preferredColorScheme(.dark)
     }
 }

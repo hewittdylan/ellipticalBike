@@ -40,12 +40,12 @@ class BikeDataModel: ObservableObject {
     
     private func calculateCaloriesPerMinute(heartRate: Int, age: Int, weight: Double, isMale: Bool) -> Double {
         var calories: Double
-        if isMale {
-            calories = Double(age) * 0.2017 + weight * 0.09036 + Double(heartRate) * 0.6309 - 55.0969
+        if isMale {  //Keytel Formula
+            calories = Double(age) * 0.2017 + weight * 0.1988 + Double(heartRate) * 0.6309 - 55.0969
         } else {
-            calories = Double(age) * 0.074 - weight * 0.05741 + Double(heartRate) * 0.4472 - 20.4022
+            calories = Double(age) * 0.074 - weight * 0.1263 + Double(heartRate) * 0.4472 - 20.4022
         }
-        return max(calories, 0.0)
+        return max(calories / 4.184, 0.0)
     }
     
     func receiveBikeDataUpdate(_ data: ReceivedData) {

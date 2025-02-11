@@ -67,7 +67,7 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     VStack(alignment: .leading) {
-                        Text("MONDAY, 6 JAN")
+                        Text("TUESDAY, 11 FEB")
                             .font(.caption)
                             .bold()
                             .foregroundStyle(.gray)

@@ -44,6 +44,7 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     }
     
     func startWorkout() {
+        self.startPeriodicUpdates()
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = .elliptical
         configuration.locationType = .indoor
@@ -67,6 +68,7 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     }
     
     func stopWorkout() {
+        self.stopPeriodicUpdates()
         workoutSession?.end()
         workoutBuilder?.endCollection(withEnd: Date()) { success, error in
             if !success {

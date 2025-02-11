@@ -54,7 +54,7 @@ struct HeartRateView: View {
     @ObservedObject private var bikeData = BikeDataModel.shared
     var maxHeartRate: Double = 198.0 //220 - age
     @State var currentZone: HRZones = .one
-    @State var percentage: Double = 0.5
+    @State var percentage: Double = 0.01
     
     var body: some View {
         ZStack {
@@ -98,7 +98,7 @@ struct HeartRateView: View {
             currentZone = getHeartZone()
             let a = Double(bikeData.heartRate) - currentZone.lowerBound * maxHeartRate
             let b = (currentZone.upperBound - currentZone.lowerBound) * maxHeartRate
-            percentage = a / b
+            percentage = max(a / b, 0.01)
         })
         .frame(height: 150)
         .ignoresSafeArea(.all)
