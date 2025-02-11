@@ -2,4 +2,4 @@ iOS app designed to connect seamlessly with your Apple Watch and a static bike, 
 The app leverages Apple’s HealthKit and Bluetooth integration to collect workout metrics, providing insights into your performance and progress.
 
 ![Screenshot](screenshots/homeView.PNG)
-![Screenshot](trainView.PNG)
+![Screenshot](screenshots/trainView.PNG)
