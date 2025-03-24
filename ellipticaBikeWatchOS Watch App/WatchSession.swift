@@ -35,10 +35,13 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
         }
     }
 
-
-    func sendHeartRate(_ heartRate: Double) {
+    func sendWatchUpdate(_ heartRate: Double, _ calories: Double) {
+        guard session.isReachable else {
+            print("No se ha podido enviar información al iPhone: la sesión no es alcanzable")
+            return
+        }
         do {
-            try session.updateApplicationContext(["heartRate": heartRate])
+            try session.updateApplicationContext(["heartRate": heartRate, "calories": calories])
         } catch {
             print("Error al actualizar ApplicationContext: \(error.localizedDescription)")
         }

@@ -101,7 +101,7 @@ struct TrainView: View {
                 .padding(.vertical, verticalPadding)
                 
                 HStack {
-                    StatView(label: "Calories", value: formatDouble(bikeData.calories), unit: "kcal")
+                    StatView(label: "Calories", value: "\(Int(bikeData.calories))", unit: "kcal")
                     Spacer()
                     StatView(label: "Time", value: formatTime(seconds: bikeData.elapsedTime), unit: "")
                 }

@@ -30,14 +30,18 @@ class BikeDataModel: ObservableObject {
     
     func receiveWatchUpdate(_ data: ReceivedData) {
         if let hr = data.heartRate {
-            self.watchCaloriesSum += calculateCaloriesPerMinute(heartRate: hr, age: 22, weight: 80, isMale: true) / (60 / watchRefreshingInterval)
             DispatchQueue.main.async {
-                self.heartRate = data.heartRate!
-                self.calories = self.watchCaloriesSum.rounded(.down)
+                self.heartRate = hr
+            }
+        }
+        if let cl = data.calories {
+            DispatchQueue.main.async {
+                self.calories = cl.rounded(.down)
             }
         }
     }
     
+    /*
     private func calculateCaloriesPerMinute(heartRate: Int, age: Int, weight: Double, isMale: Bool) -> Double {
         var calories: Double
         if isMale {  //Keytel Formula
@@ -47,6 +51,7 @@ class BikeDataModel: ObservableObject {
         }
         return max(calories / 4.184, 0.0)
     }
+    */
     
     func receiveBikeDataUpdate(_ data: ReceivedData) {
         DispatchQueue.main.async {

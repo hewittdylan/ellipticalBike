@@ -49,21 +49,31 @@ struct ContentView: View {
                     .padding()
                     .background(.black)
                 } else {
-                    ZStack {
-                        Image(systemName: "suit.heart.fill")
-                            .font(.system(size: 100))
-                            .foregroundStyle(.heartRed.gradient)
-                            .symbolEffect(.bounce, options: .repeating.speed(1), value: activeWorkout)
-                            .scaleEffect(1)
-                        Text(String(format: "%.0f", healthManager.heartRate))
-                            .font(.largeTitle)
-                            .foregroundStyle(.black.gradient)
+                    VStack(alignment: .center,spacing: -60) {
+                        ZStack {
+                            Image(systemName: "suit.heart.fill")
+                                .font(.system(size: 100))
+                                .foregroundStyle(.heartRed.gradient)
+                                .symbolEffect(.bounce, options: .repeating.speed(1), value: activeWorkout)
+                                .scaleEffect(1)
+                            Text(String(format: "%.0f", healthManager.heartRate))
+                                .font(.largeTitle)
+                                .foregroundStyle(.black.gradient)
+                        }
+                        .scaleEffect(1.5)
+                        .frame(width: 250, height: 250, alignment: .center)
+                        .background(.black)
+                        HStack {
+                            Text(String(format: "%.0f", healthManager.calories))
+                                .font(.title)
+                                .foregroundStyle(.white.gradient)
+                                .frame(width: 50, height: 50, alignment: .center)
+                            Text("kcal")
+                                .font(.subheadline)
+                                .foregroundStyle(.white.opacity(0.60))
+                        }
                     }
-                    .scaleEffect(1.5)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .frame(width: 250, height: 250, alignment: .center)
-                    .padding()
-                    .background(.black)
+                    .padding(.bottom, 50)
                 }
             }
         }

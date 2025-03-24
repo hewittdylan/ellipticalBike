@@ -43,15 +43,19 @@ class PhoneSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     
     //Recibe datos del Apple Watch
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
-        if let heartRate = applicationContext["heartRate"] as? Double {
-            print("Heart Rate: \(heartRate) BPM")
+        if let heartRate = applicationContext["heartRate"] as? Double,
+           let calories = applicationContext["calories"] as? Double {
+            print("Pulsaciones: \(heartRate) BPM")
             receivedData.heartRate = Int(heartRate)
+            print("Calorias: \(calories)")
+            receivedData.calories = calories
             BikeDataModel.shared.receiveWatchUpdate(receivedData)
             DispatchQueue.main.async {
                 self.watchConnected = true
             }
             timeConnection()
         }
+        
     }
     
     private func timeConnection() {

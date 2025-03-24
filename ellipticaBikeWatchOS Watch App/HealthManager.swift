@@ -13,6 +13,8 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     let healthStore = HKHealthStore()
     private var timer: Timer?
     @Published var heartRate: Double = 0.0
+    @Published var calories: Double = 0.0
+    private var caloriesPrivate: Double = 0.0
     
     private var workoutSession: HKWorkoutSession?
     private var workoutBuilder: HKLiveWorkoutBuilder?
@@ -88,7 +90,6 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
         let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
         //let typesToShare: Set = []
         let typesToRead: Set = [heartRateType]
-
         healthStore.requestAuthorization(toShare: [], read: typesToRead) { (success, error) in
             if !success {
                 print("Authorization failed")
@@ -115,6 +116,8 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
             guard let sample = samples?.first as? HKQuantitySample else { return }
             DispatchQueue.main.async {
                 self?.heartRate = sample.quantity.doubleValue(for: HKUnit(from: "count/min"))
+                self?.caloriesPrivate += (self?.calculateCaloriesPerMinute(heartRate: self?.heartRate ?? 0, age: 22, weight: 80, isMale: true) ?? 0.0) / 60
+                self?.calories = (self?.caloriesPrivate ?? 0).rounded(.down)
             }
         }
         healthStore.execute(query)
@@ -124,8 +127,9 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
         if timer == nil {
             timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
                 self?.fetchLatestHeartRate()
-                WatchSessionManager.shared.sendHeartRate(self?.heartRate ?? 0)
+                WatchSessionManager.shared.sendWatchUpdate(self?.heartRate ?? 0, self?.calories ?? 0)
                 print("Nueva lectura de corazón \(self?.heartRate ?? 0)")
+                print("Calorías actuales \(self?.calories ?? 0)")
             }
         }
     }
@@ -133,6 +137,16 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     func stopPeriodicUpdates() {
         timer?.invalidate()
         timer = nil
+    }
+    
+    private func calculateCaloriesPerMinute(heartRate: Double, age: Int, weight: Double, isMale: Bool) -> Double {
+        var calories: Double
+        if isMale {  //Keytel Formula
+            calories = Double(age) * 0.2017 + weight * 0.1988 + heartRate * 0.6309 - 55.0969
+        } else {
+            calories = Double(age) * 0.074 - weight * 0.1263 + Double(heartRate) * 0.4472 - 20.4022
+        }
+        return max(calories / 4.184, 0.0)
     }
 }
 
